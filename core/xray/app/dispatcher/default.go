@@ -1,7 +1,5 @@
 package dispatcher
 
-//go:generate go run github.com/xtls/xray-core/common/errors/errorgen
-
 import (
 	"context"
 	"fmt"
@@ -238,6 +236,47 @@ func (d *DefaultDispatcher) getLink(ctx context.Context, network net.Network) (*
 	return inboundLink, outboundLink, limit, nil
 }
 
+func (d *DefaultDispatcher) WrapLink(ctx context.Context, link *transport.Link) *transport.Link {
+	//sessionInbound := session.InboundFromContext(ctx)
+	//var user *protocol.MemoryUser
+	//if sessionInbound != nil {
+	//	user = sessionInbound.User
+	//}
+	//
+	//link.Reader = &buf.TimeoutWrapperReader{Reader: link.Reader}
+	//
+	//if user != nil && len(user.Email) > 0 {
+	//	p := d.policy.ForLevel(user.Level)
+	//	if p.Stats.UserUplink {
+	//		name := "user>>>" + user.Email + ">>>traffic>>>uplink"
+	//		if c, _ := stats.GetOrRegisterCounter(d.stats, name); c != nil {
+	//			link.Reader.(*buf.TimeoutWrapperReader).Counter = c
+	//		}
+	//	}
+	//	if p.Stats.UserDownlink {
+	//		name := "user>>>" + user.Email + ">>>traffic>>>downlink"
+	//		if c, _ := stats.GetOrRegisterCounter(d.stats, name); c != nil {
+	//			link.Writer = &SizeStatWriter{
+	//				Counter: c,
+	//				Writer:  link.Writer,
+	//			}
+	//		}
+	//	}
+	//	if p.Stats.UserOnline {
+	//		name := "user>>>" + user.Email + ">>>online"
+	//		if om, _ := stats.GetOrRegisterOnlineMap(d.stats, name); om != nil {
+	//			sessionInbounds := session.InboundFromContext(ctx)
+	//			userIP := sessionInbounds.Source.Address.String()
+	//			om.AddIP(userIP)
+	//			// log Online user with ips
+	//			// errors.LogDebug(ctx, "user>>>" + user.Email + ">>>online", om.Count(), om.List())
+	//		}
+	//	}
+	//}
+
+	return link
+}
+
 func (d *DefaultDispatcher) shouldOverride(ctx context.Context, result SniffResult, request session.SniffingRequest, destination net.Destination) bool {
 	domain := result.Domain()
 	if domain == "" {
@@ -269,7 +308,7 @@ func (d *DefaultDispatcher) shouldOverride(ctx context.Context, result SniffResu
 			return true
 		}
 		if fkr0, ok := d.fdns.(dns.FakeDNSEngineRev0); ok && protocolString != "bittorrent" && p == "fakedns" &&
-			destination.Address.Family().IsIP() && fkr0.IsIPInIPPool(destination.Address) {
+			fkr0.IsIPInIPPool(destination.Address) {
 			errors.LogInfo(ctx, "Using sniffer ", protocolString, " since the fake DNS missed")
 			return true
 		}
@@ -327,7 +366,7 @@ func (d *DefaultDispatcher) Dispatch(ctx context.Context, destination net.Destin
 					protocol = resComp.ProtocolForDomainResult()
 				}
 				isFakeIP := false
-				if fkr0, ok := d.fdns.(dns.FakeDNSEngineRev0); ok && ob.Target.Address.Family().IsIP() && fkr0.IsIPInIPPool(ob.Target.Address) {
+				if fkr0, ok := d.fdns.(dns.FakeDNSEngineRev0); ok && fkr0.IsIPInIPPool(ob.Target.Address) {
 					isFakeIP = true
 				}
 				if sniffingRequest.RouteOnly && protocol != "fakedns" && protocol != "fakedns+others" && !isFakeIP {

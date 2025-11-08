@@ -334,4 +334,4 @@ require (
 
 replace github.com/sagernet/sing-box v1.13.0 => github.com/wyx2685/sing-box_mod v1.13.0-alpha.5
 
-replace github.com/xtls/xray-core v1.251015.0 => github.com/xtlsee/Xray-core v1.0.0
+replace github.com/xtls/xray-core v1.251015.0 => github.com/xtlsee/Xray-core v1.0.1

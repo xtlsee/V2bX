@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         # Include amd64 on all platforms.
-        goos: [linux]
+        goos: [windows, linux]
         goarch: [amd64]
       fail-fast: false
 

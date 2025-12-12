@@ -10,8 +10,9 @@ import (
 var _ buf.TimeoutReader = (*CounterReader)(nil)
 
 type CounterReader struct {
-	Reader  buf.TimeoutReader
-	Counter *atomic.Int64
+	Reader     buf.TimeoutReader
+	Counter    *atomic.Int64
+	LogCounter *atomic.Int64
 }
 
 func (c *CounterReader) ReadMultiBufferTimeout(time.Duration) (buf.MultiBuffer, error) {
@@ -21,6 +22,7 @@ func (c *CounterReader) ReadMultiBufferTimeout(time.Duration) (buf.MultiBuffer, 
 	}
 	if mb.Len() > 0 {
 		c.Counter.Add(int64(mb.Len()))
+		c.LogCounter.Add(int64(mb.Len()))
 	}
 	return mb, nil
 }
@@ -32,6 +34,7 @@ func (c *CounterReader) ReadMultiBuffer() (buf.MultiBuffer, error) {
 	}
 	if mb.Len() > 0 {
 		c.Counter.Add(int64(mb.Len()))
+		c.LogCounter.Add(int64(mb.Len()))
 	}
 	return mb, nil
 }

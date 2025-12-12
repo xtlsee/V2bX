@@ -221,15 +221,40 @@ func (d *DefaultDispatcher) getLink(ctx context.Context, network net.Network) (*
 		}
 
 		ts := t.GetCounter(user.Email)
-		upcounter := &counter.XrayTrafficCounter{V: &ts.UpCounter}
-		downcounter := &counter.XrayTrafficCounter{V: &ts.DownCounter}
-		inboundLink.Writer = &dispatcher.SizeStatWriter{
-			Counter: upcounter,
-			Writer:  inboundLink.Writer,
-		}
-		outboundLink.Writer = &dispatcher.SizeStatWriter{
-			Counter: downcounter,
-			Writer:  outboundLink.Writer,
+		//upcounter := &counter.XrayTrafficCounter{V: &ts.UpCounter}
+		//downcounter := &counter.XrayTrafficCounter{V: &ts.DownCounter}
+		//inboundLink.Writer = &dispatcher.SizeStatWriter{
+		//	Counter: upcounter,
+		//	Writer:  inboundLink.Writer,
+		//}
+		//outboundLink.Writer = &dispatcher.SizeStatWriter{
+		//	Counter: downcounter,
+		//	Writer:  outboundLink.Writer,
+		//}
+		if accessMessage := log.AccessMessageFromContext(ctx); accessMessage != nil {
+			upcounter := &counter.XrayTrafficCounter{V: &ts.UpCounter}
+			downcounter := &counter.XrayTrafficCounter{V: &ts.DownCounter}
+			inboundLink.Writer = &SizeStatWriter{
+				Counter:    upcounter,
+				Writer:     inboundLink.Writer,
+				LogCounter: accessMessage.UpCounter,
+			}
+			outboundLink.Writer = &SizeStatWriter{
+				Counter:    downcounter,
+				Writer:     outboundLink.Writer,
+				LogCounter: accessMessage.DownCounter,
+			}
+		} else {
+			upcounter := &counter.XrayTrafficCounter{V: &ts.UpCounter}
+			downcounter := &counter.XrayTrafficCounter{V: &ts.DownCounter}
+			inboundLink.Writer = &dispatcher.SizeStatWriter{
+				Counter: upcounter,
+				Writer:  inboundLink.Writer,
+			}
+			outboundLink.Writer = &dispatcher.SizeStatWriter{
+				Counter: downcounter,
+				Writer:  outboundLink.Writer,
+			}
 		}
 	}
 
@@ -454,15 +479,41 @@ func (d *DefaultDispatcher) DispatchLink(ctx context.Context, destination net.De
 		}
 
 		ts := t.GetCounter(user.Email)
-		downcounter := &counter.XrayTrafficCounter{V: &ts.DownCounter}
-		outbound.Reader = &CounterReader{
-			Reader:  &buf.TimeoutWrapperReader{Reader: outbound.Reader},
-			Counter: &ts.UpCounter,
-		}
-		lm.AddLink(managedWriter, outbound.Reader)
-		outbound.Writer = &dispatcher.SizeStatWriter{
-			Counter: downcounter,
-			Writer:  outbound.Writer,
+		//downcounter := &counter.XrayTrafficCounter{V: &ts.DownCounter}
+		//outbound.Reader = &CounterReader{
+		//	Reader:  &buf.TimeoutWrapperReader{Reader: outbound.Reader},
+		//	Counter: &ts.UpCounter,
+		//}
+		//lm.AddLink(managedWriter, outbound.Reader)
+		//outbound.Writer = &dispatcher.SizeStatWriter{
+		//	Counter: downcounter,
+		//	Writer:  outbound.Writer,
+		//}
+		if accessMessage := log.AccessMessageFromContext(ctx); accessMessage != nil {
+			downcounter := &counter.XrayTrafficCounter{V: &ts.DownCounter}
+			outbound.Reader = &CounterReader{
+				Reader:     &buf.TimeoutWrapperReader{Reader: outbound.Reader},
+				Counter:    &ts.UpCounter,
+				LogCounter: accessMessage.UpCounter,
+			}
+			lm.AddLink(managedWriter, outbound.Reader)
+			outbound.Writer = &SizeStatWriter{
+				Counter:    downcounter,
+				Writer:     outbound.Writer,
+				LogCounter: accessMessage.DownCounter,
+			}
+		} else {
+			downcounter := &counter.XrayTrafficCounter{V: &ts.DownCounter}
+			outbound.Reader = &CounterReader{
+				Reader:  &buf.TimeoutWrapperReader{Reader: outbound.Reader},
+				Counter: &ts.UpCounter,
+				//Counter: upcounter,
+			}
+			lm.AddLink(managedWriter, outbound.Reader)
+			outbound.Writer = &dispatcher.SizeStatWriter{
+				Counter: downcounter,
+				Writer:  outbound.Writer,
+			}
 		}
 	}
 
@@ -664,7 +715,7 @@ func (d *DefaultDispatcher) routedDispatch(ctx context.Context, link *transport.
 				accessMessage.Detour = inTag + " >> " + tag
 			}
 		}
-		log.Record(accessMessage)
+		//log.Record(accessMessage)
 	}
 
 	handler.Dispatch(ctx, link)

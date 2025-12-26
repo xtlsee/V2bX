@@ -74,6 +74,7 @@ func getCore(c *conf.XrayConfig) *core.Instance {
 	// Log Config
 	coreLogConfig := &coreConf.LogConfig{
 		LogLevel:  c.LogConfig.Level,
+		DNSLog:    c.LogConfig.DNSLog,
 		AccessLog: c.LogConfig.AccessPath,
 		ErrorLog:  c.LogConfig.ErrorPath,
 	}

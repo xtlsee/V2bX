@@ -12,6 +12,7 @@ type XrayConfig struct {
 
 type XrayLogConfig struct {
 	Level      string `json:"Level"`
+	DNSLog     bool   `json:"DNSLog"`
 	AccessPath string `json:"AccessPath"`
 	ErrorPath  string `json:"ErrorPath"`
 }

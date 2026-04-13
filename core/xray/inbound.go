@@ -133,10 +133,11 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 		}
 		mtd, _ := time.ParseDuration(v.RealityConfig.MaxTimeDiff)
 		in.StreamSetting.REALITYSettings = &coreConf.REALITYConfig{
-			Dest:         d,
-			Xver:         xver,
-			Show:         false,
-			ServerNames:  []string{v.TlsSettings.ServerName},
+			Dest: d,
+			Xver: xver,
+			Show: false,
+			//ServerNames:  []string{v.TlsSettings.ServerName},
+			ServerNames:  v.TlsSettings.ServerNames,
 			PrivateKey:   v.TlsSettings.PrivateKey,
 			MinClientVer: v.RealityConfig.MinClientVer,
 			MaxClientVer: v.RealityConfig.MaxClientVer,

@@ -132,12 +132,18 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 			return nil, fmt.Errorf("marshal reality dest error: %s", err)
 		}
 		mtd, _ := time.ParseDuration(v.RealityConfig.MaxTimeDiff)
+		var serverNames []string
+		if len(v.TlsSettings.ServerNames) > 0 {
+			serverNames = v.TlsSettings.ServerNames
+		} else {
+			serverNames = []string{v.TlsSettings.ServerName}
+		}
 		in.StreamSetting.REALITYSettings = &coreConf.REALITYConfig{
 			Dest: d,
 			Xver: xver,
 			Show: false,
 			//ServerNames:  []string{v.TlsSettings.ServerName},
-			ServerNames:  v.TlsSettings.ServerNames,
+			ServerNames:  serverNames,
 			PrivateKey:   v.TlsSettings.PrivateKey,
 			MinClientVer: v.RealityConfig.MinClientVer,
 			MaxClientVer: v.RealityConfig.MaxClientVer,

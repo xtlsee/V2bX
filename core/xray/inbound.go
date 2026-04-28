@@ -216,12 +216,13 @@ func buildV2ray(config *conf.Options, nodeInfo *panel.NodeInfo, inbound *coreCon
 		}
 		inbound.Settings = (*json.RawMessage)(&s)
 	}
-	if len(v.NetworkSettings) == 0 {
-		return nil
-	}
 
 	t := coreConf.TransportProtocol(v.Network)
 	inbound.StreamSetting = &coreConf.StreamConfig{Network: &t}
+
+	if len(v.NetworkSettings) == 0 {
+		return nil
+	}
 	switch v.Network {
 	case "tcp":
 		err := json.Unmarshal(v.NetworkSettings, &inbound.StreamSetting.TCPSettings)

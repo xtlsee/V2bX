@@ -145,7 +145,7 @@ func buildInbound(option *conf.Options, nodeInfo *panel.NodeInfo, tag string) (*
 			//ServerNames:  []string{v.TlsSettings.ServerName},
 			ServerNames:  serverNames,
 			PrivateKey:   v.TlsSettings.PrivateKey,
-			MinClientVer: v.RealityConfig.MinClientVer,
+			MinClientVer: "1.8.2",
 			MaxClientVer: v.RealityConfig.MaxClientVer,
 			MaxTimeDiff:  uint64(mtd.Microseconds()),
 			ShortIds:     []string{v.TlsSettings.ShortId},

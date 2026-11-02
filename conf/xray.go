@@ -55,6 +55,7 @@ type XrayOptions struct {
 	EnableTFO           bool                    `json:"EnableTFO"`
 	DisableIVCheck      bool                    `json:"DisableIVCheck"`
 	DisableSniffing     bool                    `json:"DisableSniffing"`
+	RealityShow         bool                    `json:"RealityShow"`
 	EnableFallback      bool                    `json:"EnableFallback"`
 	FallBackConfigs     []FallBackConfigForXray `json:"FallBackConfigs"`
 }

@@ -95,6 +95,7 @@ type EncSettings struct {
 }
 
 type RealityConfig struct {
+	Show         bool   `json:"show"`
 	Xver         uint64 `json:"Xver"`
 	MinClientVer string `json:"MinClientVer"`
 	MaxClientVer string `json:"MaxClientVer"`
